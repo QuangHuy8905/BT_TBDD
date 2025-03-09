@@ -1,1 +1,200 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(LibraryApp());
+}
+
+class LibraryApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: LibraryManagementScreen(),
+    );
+  }
+}
+
+class LibraryManagementScreen extends StatefulWidget {
+  @override
+  _LibraryManagementScreenState createState() => _LibraryManagementScreenState();
+}
+
+class _LibraryManagementScreenState extends State<LibraryManagementScreen> {
+  String? selectedUser = "Nguyen Van A";
+  List<String> bookList = ["Sách A", "Sách B"];
+  List<bool> bookChecked = [false, false];
+  TextEditingController bookController = TextEditingController();
+  TextEditingController userController = TextEditingController();
+  List<String> userList = ["Nguyen Van A", "Nguyen Van B", "Nguyen Van C"];
+
+  void _changeUser() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Chọn người mượn sách"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: userList.map((user) {
+              return ListTile(
+                title: Text(user),
+                onTap: () {
+                  setState(() {
+                    selectedUser = user;
+                  });
+                  Navigator.pop(context);
+                },
+              );
+            }).toList(),
+          ),
+        );
+      },
+    );
+  }
+
+  void _addUser() {
+    if (userController.text.isNotEmpty) {
+      setState(() {
+        userList.add(userController.text);
+        userController.clear();
+      });
+    }
+  }
+
+  void _borrowBooks() {
+    List<String> borrowedBooks = [];
+    for (int i = 0; i < bookList.length; i++) {
+      if (bookChecked[i]) {
+        borrowedBooks.add(bookList[i]);
+      }
+    }
+
+    if (selectedUser != null && borrowedBooks.isNotEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Thông tin mượn sách"),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Người mượn: $selectedUser"),
+                SizedBox(height: 10),
+                Text("Sách đã mượn:"),
+                ...borrowedBooks.map((book) => Text("- $book")),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text("Đóng"),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Hệ thống Quản lý Thư viện"),
+        centerTitle: true,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Người mượn sách", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: TextEditingController(text: selectedUser),
+                    decoration: InputDecoration(border: OutlineInputBorder()),
+                    readOnly: true,
+                  ),
+                ),
+                SizedBox(width: 10),
+                ElevatedButton(
+                  onPressed: _changeUser,
+                  child: Text("Đổi"),
+                ),
+              ],
+            ),
+            SizedBox(height: 10),
+            TextField(
+              controller: userController,
+              decoration: InputDecoration(
+                labelText: "Nhập tên người mượn mới",
+                border: OutlineInputBorder(),
+              ),
+            ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: _addUser,
+              child: Text("Thêm người mượn"),
+            ),
+            SizedBox(height: 20),
+            Text("Danh sách sách", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Expanded(
+              child: ListView.builder(
+                itemCount: bookList.length,
+                itemBuilder: (context, index) {
+                  return CheckboxListTile(
+                    title: Text(bookList[index]),
+                    value: bookChecked[index],
+                    onChanged: (bool? value) {
+                      setState(() {
+                        bookChecked[index] = value ?? false;
+                      });
+                    },
+                  );
+                },
+              ),
+            ),
+            TextField(
+              controller: bookController,
+              decoration: InputDecoration(
+                labelText: "Nhập tên sách",
+                border: OutlineInputBorder(),
+              ),
+            ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                if (bookController.text.isNotEmpty) {
+                  setState(() {
+                    bookList.add(bookController.text);
+                    bookChecked.add(false);
+                    bookController.clear();
+                  });
+                }
+              },
+              child: Text("Thêm sách"),
+            ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: _borrowBooks,
+              child: Text("Mượn sách"),
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Quản lý"),
+          BottomNavigationBarItem(icon: Icon(Icons.book), label: "DS Sách"),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Nhân viên"),
+        ],
+      ),
+    );
+  }
+}
 
