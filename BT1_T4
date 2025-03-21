@@ -1,0 +1,173 @@
+import 'package:flutter/material.dart';
+import 'dart:math';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: RootPage(),
+    );
+  }
+}
+
+class RootPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.network('https://i.imgur.com/JPSP6zj.png', height: 150),
+            SizedBox(height: 20),
+            Text("Navigation", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                "is a framework that simplifies the implementation of navigation between different UI components (activities, fragments, or composables) in an app",
+                textAlign: TextAlign.center,
+              ),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+              ),
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => ListPage()));
+              },
+              child: Text("PUSH", style: TextStyle(fontSize: 18, color: Colors.white)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ListPage extends StatelessWidget {
+  final List<String> quotes = [
+    "The only way to do great work is to love what you do."
+  ]..addAll(List.generate(99, (index) => "Random text ${Random().nextInt(1000)}"));
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.blue),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text("LazyColumn: Load 1,000,000 randomly generated items", style: TextStyle(color: Colors.blue)),
+        backgroundColor: Colors.white,
+        elevation: 0,
+      ),
+      body: ListView.builder(
+        itemCount: quotes.length,
+        itemBuilder: (context, index) {
+          return Card(
+            color: Colors.blue[100],
+            margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            child: ListTile(
+              title: Text("${index + 1} | ${quotes[index]}"),
+              trailing: Icon(Icons.arrow_forward, color: Colors.black),
+              onTap: () {
+                if (index == 0) {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => DetailPage()));
+                } else {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => RandomDetailPage(quotes[index])));
+                }
+              },
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class DetailPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.blue),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text("Detail", style: TextStyle(color: Colors.blue)),
+        backgroundColor: Colors.white,
+        elevation: 0,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("The only way to do great work is to love what you do", textAlign: TextAlign.center, style: TextStyle(fontSize: 18)),
+            SizedBox(height: 20),
+            Image.network('https://i.imgur.com/UlUhVZo.png', height: 200),
+            SizedBox(height: 20),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+              ),
+              onPressed: () {
+                Navigator.popUntil(context, (route) => route.isFirst);
+              },
+              child: Text("BACK TO ROOT", style: TextStyle(fontSize: 18, color: Colors.white)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class RandomDetailPage extends StatelessWidget {
+  final String text;
+  RandomDetailPage(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.blue),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text("Random Detail", style: TextStyle(color: Colors.blue)),
+        backgroundColor: Colors.white,
+        elevation: 0,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(text, textAlign: TextAlign.center, style: TextStyle(fontSize: 18)),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+              ),
+              onPressed: () {
+                Navigator.popUntil(context, (route) => route.isFirst);
+              },
+              child: Text("BACK TO ROOT", style: TextStyle(fontSize: 18, color: Colors.white)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
