@@ -1,0 +1,142 @@
+import 'package:flutter/material.dart';
+import 'dart:io';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    int currentTime = DateTime.now().hour;
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: currentTime % 2 == 0 ? TodoListScreen() : EmptyListScreen(),
+    );
+  }
+}
+
+class TodoListScreen extends StatelessWidget {
+  final List<Map<String, String>> tasks = [
+    {'title': 'Complete Android Project', 'description': 'Finish the UI, integrate API, and write documentation', 'status': 'In Progress', 'priority': 'High'},
+    {'title': 'Doctor Appointment 2', 'description': 'This task is related to Work. It needs to be completed', 'status': 'Pending', 'priority': 'Medium'},
+    {'title': 'Meeting', 'description': 'This task is related to Fitness. It needs to be completed', 'status': 'Pending', 'priority': 'Low'},
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('SmartTasks')),
+      body: ListView.builder(
+        itemCount: tasks.length,
+        itemBuilder: (context, index) {
+          return Card(
+            color: index == 0 ? Colors.red[100] : index == 1 ? Colors.green[100] : Colors.blue[100],
+            child: ListTile(
+              title: Text(tasks[index]['title']!),
+              subtitle: Text(tasks[index]['description']!),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TaskDetailScreen(task: tasks[index]),
+                  ),
+                );
+              },
+            ),
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () {},
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
+          BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: ''),
+          BottomNavigationBarItem(icon: Icon(Icons.insert_drive_file), label: ''),
+          BottomNavigationBarItem(icon: Icon(Icons.settings), label: ''),
+        ],
+      ),
+    );
+  }
+}
+
+class EmptyListScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('SmartTasks')),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.assignment, size: 100, color: Colors.grey),
+            SizedBox(height: 20),
+            Text('No Tasks Yet!', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            Text('Stay productive—add something to do'),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () {},
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
+          BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: ''),
+          BottomNavigationBarItem(icon: Icon(Icons.insert_drive_file), label: ''),
+          BottomNavigationBarItem(icon: Icon(Icons.settings), label: ''),
+        ],
+      ),
+    );
+  }
+}
+
+class TaskDetailScreen extends StatelessWidget {
+  final Map<String, String> task;
+  TaskDetailScreen({required this.task});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Detail')),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(task['title']!, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+            SizedBox(height: 10),
+            Text(task['description']!),
+            SizedBox(height: 20),
+            Container(
+              padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.red[100],
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Category: Work'),
+                  Text('Status: ${task['status']}'),
+                  Text('Priority: ${task['priority']}'),
+                ],
+              ),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Back'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
